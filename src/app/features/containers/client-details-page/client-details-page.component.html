@@ -1,0 +1,17 @@
+<ng-container *ngIf="clientDetails$ | async">
+            <div class="row">
+                <div class="col col-lg-9">
+                    <app-client-main-data [clientData]="clientDetails$ | async"></app-client-main-data>
+                    <app-client-orders [clientOrders]="clientOrders$ | async"></app-client-orders>
+                </div>
+                <div class="col col-lg-3">
+                    <div class="mat-elevation-z2" *ngIf="clientDetails$ | async">
+                        <p>Kontakt</p>
+                        <ul class="templatemo_list">
+                            <li>telefon: {{(clientDetails$ | async)?.phone}}</li>
+                            <li>email: {{(clientDetails$ | async)?.email}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+</ng-container>
