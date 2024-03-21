@@ -8,7 +8,7 @@ Routable, feature components needs data for themselves or child components from 
 These data should be unsubscribed as they're observables althought once the Http request completes it unsubscribes automatically.
 
 Code can be placed in one Abstract BaseComponent and used as extension for feature component 
-to avoid repeating. In abstract we have destruct$ as Subject which is destroyed when component is closed.
+to avoid repeating. In abstract class we have destruct$ as Subject which is destroyed when component is closed (OnDestroy lifecycle hook).
 ```
 export abstract class BaseComponent implements OnDestroy {
      protected destruct$: Subject<boolean> = new Subject<boolean>();
@@ -172,26 +172,3 @@ export class HomeDataFacade extends BaseComponent {
      }
 }
 ```
-
-## Common Unsubscibe Method for Feture Components
-Treating Feature Components as MVC it means we collect data and provide them to child components, modals..
-All Observables needs to unsubsribe in case we don't provide them as Observables and using async Pipe.
-So if we don't want to not repeat code, the best solution is to use Abstract Class Base Components to extends Feature Component and using Subject and OnDestroy Method with following code:
-
-```
-export abstract class BaseComponent implements OnDestroy {
-     protected destruct$: Subject<boolean> = new Subject<boolean>();
-     public ngOnDestroy(): void {
-          this.destruct$.next(true);
-          this.destruct$.unsubscribe();
-     }
-}
-```
-
-In Component we can use destruct$ to unsubscibe Observable:
-``` 
-  export class ClientPageComponent extends BaseComponent { ...
-
-  .pipe(
-        takeUntil(this.destruct$)
-      ).subscribe();
