@@ -9,7 +9,7 @@ These data should be unsubscribed as they're observables althought once the Http
 
 Code can be placed in one Abstract BaseComponent and used as extension for feature component 
 to avoid repeating. In abstract we have destruct$ as Subject which is destroyed when component is closed.
-
+```
 export abstract class BaseComponent implements OnDestroy {
      protected destruct$: Subject<boolean> = new Subject<boolean>();
      public ngOnDestroy(): void {
@@ -28,6 +28,7 @@ export class ClientDetailsPageComponent extends BaseComponent  {
                     takeUntil(this.destruct$)
                )
                .subscribe();
+```
 			   
 ## Abstract Class BaseFormComponent
 
@@ -36,7 +37,7 @@ Components with forms should be treated as dump components. With data provided b
  - formChange - data form
 This class is used as extension in parent component that includes form component.
 Code responsible for form data is placed in one component, for better controll and to avoid to repeat code. 
-
+```
 export abstract class BaseFormComponent extends BaseComponent {
      abstract form: { form: FormGroup };
      abstract formData: EventEmitter<any>;
@@ -68,13 +69,13 @@ export class FabricFormComponent extends BaseFormComponent implements OnInit {
   public ngOnInit(): void {
     this.checkFormAndEmit();
   }
-  
+```
 ## Services - Abstract Class ApiService
   
   Thanks to this solution we have handled errors and shareReplay - 
   (rxjs operator can help us avoid duplicate HTTP requests in Angular applications)
   in one place. This class is used as extension for all services handling data. 
-  
+  ```
   @Injectable()
   export class StockService extends ApiService {.....
 
@@ -115,17 +116,19 @@ export class FabricFormComponent extends BaseFormComponent implements OnInit {
                })
           );
      }
-     
-	 ## Data Facade Class
-	 Separates Component from data.
-	 We don't need to import services to component, we just take data.
-	 
-	  //These imports were moved to home facade
+```
+
+ ## Data Facade Class
+ Separates Component from data layer.
+ We don't need to import services to component, we just take data.
+ 
+```	 
+    //These imports were moved to home facade
     // import { StockService } from '@features/stock-page/services/stock.service';
     // import { OrdersService } from '@features/orders-page/services/orders.service';
     // import { EventsService } from '@features/events-page/services/events.service';
  
-	export class HomePageComponent {
+export class HomePageComponent {
   public lastEvents$: Observable<IEvent[]> = this.homeDataFacade.lastEvents$;
   public lastOrders$: Observable<ILastOrder[]> | null =     this.homeDataFacade.lastOrders$;
   public unsentOrders$: Observable<IOrdersUnsent[]> | null =     this.homeDataFacade.unsentOrders$;
@@ -134,19 +137,21 @@ export class FabricFormComponent extends BaseFormComponent implements OnInit {
   public sentToProduction$: Observable<number> | null =     this.homeDataFacade.sentToProduction$;
   public mostPopularAssorts$: Observable<IMostPopularAssort[]> =     this.homeDataFacade.mostPopularAssorts$;
   public mostPopularFabrics$: Observable<IMostPopularFabric[]> =     this.homeDataFacade.mostPopularFabrics$;
-}
+
 
   constructor(
     private router: Router,
     private homeDataFacade: HomeDataFacade 
-	  //These services were moved to home facade 
-	  // private stockService: StockService,
+    //These services were moved to home facade 
+    // private stockService: StockService,
     // private ordersService: OrdersService,
     // private eventsService: EventsService
-	)
-  {}
-  
-  Facade Class  
+) {
+  }
+}
+```
+  ## Facade Class  
+  ```
   @Injectable()
 export class HomeDataFacade extends BaseComponent {
      public lastEvents$: Observable<IEvent[]> = this.eventsService.getLastEvents();
@@ -166,3 +171,4 @@ export class HomeDataFacade extends BaseComponent {
           super();
      }
 }
+
